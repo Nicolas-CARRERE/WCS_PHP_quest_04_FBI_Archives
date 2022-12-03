@@ -59,11 +59,12 @@ function ScanDirectory($Directory)
 {
     $MyDirectory = opendir($Directory) or die('Erreur');
     while ($Entry = @readdir($MyDirectory)) {
-        if (is_dir($Directory . '/' . $Entry) && $Entry != '.' && $Entry != '..') {
-            ScanDirectory($Directory . '/' . $Entry);
+        if (is_dir($Directory . $Entry) && $Entry != '.' && $Entry != '..') {
+            ScanDirectory($Directory . $Entry);
         } elseif ($Entry != '.' && $Entry != '..' && (str_contains($Entry, ".txt") || str_contains($Entry, ".html"))) {
             echo '</li>';
-            echo '<p>' . $Directory . '<button type="submit" href="RepEfface($Directory)">DELETE REPO</button><a href="?f=' . $Entry . '">' . $Entry . '</a>';
+            echo '<form action="" method="get"><p>' . $Directory . '<input type="hidden" name="f" id="f" value="' . $Directory . '" />';
+            echo '<button>DELETE</button><a href="?f=' . $Entry . '">' . $Entry . '</a></form>';
             echo '</li>';
         }
     }
@@ -74,9 +75,15 @@ $dir = ScanDirectory("./files/");
 ?>
 
 <?php
+// Here we take the value of of the f param, if it'a dir => delete the repo
 if (isset($_GET["f"])) {
-    $fichier = "./files/roswell/" . $_GET["f"];
-    $contenu = file_get_contents($fichier, "r") or die("Unable to open file!");
+    if (str_contains($_GET["f"], ".txt") || str_contains($_GET["f"], ".html")) {
+        $fichier = "./files/roswell/" . $_GET["f"];
+        $contenu = file_get_contents($fichier, "r") or die("<br/>Unable to open file!");
+    } else {
+        RepEfface($_GET["f"]);
+    }
+
 }
 ?>
 
